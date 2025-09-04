@@ -1,0 +1,71 @@
+{
+  "name": "Cuaderno de Campo - Muestreo Ácaros",
+  "short_name": "MuestreoAcaros",
+  "description": "Aplicación para muestreo de ácaros en cítricos con metodología presencia/ausencia",
+  "version": "1.0.0",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#2e7d32",
+  "background_color": "#f5f5f5",
+  "lang": "es-DO",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png", 
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["agriculture", "productivity", "utilities"],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Nuevo Muestreo",
+      "short_name": "Muestreo",
+      "description": "Crear un nuevo registro de muestreo",
+      "url": "/index.html#muestreo",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Ver Registros",
+      "short_name": "Registros",
+      "description": "Ver registros guardados",
+      "url": "/index.html#registros",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-1.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Formulario de muestreo principal"
+    },
+    {
+      "src": "screenshot-2.png", 
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Vista de registros guardados"
+    }
+  ]
+}

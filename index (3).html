@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuaderno de Campo - Muestreo Ácaros</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2e7d32">
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 CUADERNO DE CAMPO DIGITAL</h1>
+            <h2>Muestreo Presencia/Ausencia - Ácaros en Cítricos</h2>
+            <div class="status-bar">
+                <span id="connectionStatus" class="status-offline">📡 OFFLINE</span>
+                <span id="gpsStatus" class="status-inactive">🌐 GPS Inactivo</span>
+                <span id="recordCount">📊 Registros: <span id="count">0</span></span>
+            </div>
+        </div>
+
+        <nav class="tab-nav">
+            <button class="tab-btn active" onclick="showTab('muestreo')">📝 Muestreo</button>
+            <button class="tab-btn" onclick="showTab('registros')">📋 Registros</button>
+            <button class="tab-btn" onclick="showTab('sincronizar')">☁️ Sincronizar</button>
+        </nav>
+
+        <!-- TAB MUESTREO -->
+        <div id="tab-muestreo" class="tab-content active">
+            <form id="muestreoForm">
+                <!-- INFORMACIÓN GENERAL -->
+                <div class="form-section">
+                    <h3>📍 INFORMACIÓN GENERAL</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fecha">Fecha <span class="required">*</span></label>
+                            <input type="date" id="fecha" name="fecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hora">Hora</label>
+                            <input type="time" id="hora" name="hora">
+                        </div>
+                        <div class="form-group">
+                            <label for="tecnico">Técnico <span class="required">*</span></label>
+                            <input type="text" id="tecnico" name="tecnico" placeholder="Nombre del técnico" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="finca">Finca <span class="required">*</span></label>
+                            <select id="finca" name="finca" required>
+                                <option value="">Seleccionar finca</option>
+                                <option value="Fernández">Fernández (12.43 ha)</option>
+                                <option value="B. Cementerio">B. Cementerio (3.68 ha)</option>
+                                <option value="Baez">Baez (9.57 ha)</option>
+                                <option value="Baez 2">Baez 2 (22.81 ha)</option>
+                                <option value="Florida">Florida (12.46 ha)</option>
+                                <option value="Victorina">Victorina (25.76 ha)</option>
+                                <option value="Bogaert">Bogaert (44.0 ha)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bloque">Bloque/Sector</label>
+                            <input type="text" id="bloque" name="bloque" placeholder="Ej: Sector Norte, Parcela 3">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GEOLOCALIZACIÓN -->
+                <div class="form-section">
+                    <h3>🌐 GEOLOCALIZACIÓN</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="latitud">Latitud</label>
+                            <input type="text" id="latitud" name="latitud" placeholder="Ej: 19.564321" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="longitud">Longitud</label>
+                            <input type="text" id="longitud" name="longitud" placeholder="Ej: -71.086543" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="precision">Precisión (m)</label>
+                            <input type="text" id="precision" name="precision" placeholder="±5m" readonly>
+                        </div>
+                    </div>
+                    <div class="gps-controls">
+                        <button type="button" class="btn btn-gps" onclick="getLocation()" id="gpsBtn">
+                            📍 Obtener GPS
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="clearGPS()">
+                            🗑️ Limpiar GPS
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CONDICIONES AMBIENTALES -->
+                <div class="form-section">
+                    <h3>🌤️ CONDICIONES AMBIENTALES</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="temperatura">Temperatura (°C)</label>
+                            <input type="number" id="temperatura" name="temperatura" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="humedad">Humedad Relativa (%)</label>
+                            <input type="number" id="humedad" name="humedad" min="0" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="lluvia">Lluvia 24h (mm)</label>
+                            <input type="number" id="lluvia" name="lluvia" step="0.1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESPECIES -->
+                <div class="form-section species-section">
+                    <h3>🔬 ACERIA SHELDONI</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="plantas_aceria">Plantas Muestreadas</label>
+                            <input type="number" id="plantas_aceria" name="plantas_aceria" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="positivas_aceria">Plantas Positivas</label>
+                            <input type="number" id="positivas_aceria" name="positivas_aceria" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="infestacion_aceria">% Infestación</label>
+                            <input type="text" id="infestacion_aceria" name="infestacion_aceria" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section species-section">
+                    <h3>🍊 PHYLLOCOPTRUTA OLEIVORA</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="plantas_phyllo">Plantas Muestreadas</label>
+                            <input type="number" id="plantas_phyllo" name="plantas_phyllo" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="positivas_phyllo">Plantas Positivas</label>
+                            <input type="number" id="positivas_phyllo" name="positivas_phyllo" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="infestacion_phyllo">% Infestación</label>
+                            <input type="text" id="infestacion_phyllo" name="infestacion_phyllo" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section species-section">
+                    <h3>🕷️ POLYPHAGOTARSONEMUS LATUS</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="plantas_poly">Plantas Muestreadas</label>
+                            <input type="number" id="plantas_poly" name="plantas_poly" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="positivas_poly">Plantas Positivas</label>
+                            <input type="number" id="positivas_poly" name="positivas_poly" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="infestacion_poly">% Infestación</label>
+                            <input type="text" id="infestacion_poly" name="infestacion_poly" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAUNA AUXILIAR -->
+                <div class="form-section">
+                    <h3>🐞 FAUNA AUXILIAR</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fitoseidos">Ácaros Depredadores</label>
+                            <select id="fitoseidos" name="fitoseidos">
+                                <option value="">No observado</option>
+                                <option value="bajo">Bajo</option>
+                                <option value="medio">Medio</option>
+                                <option value="alto">Alto</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="coccinelidos">Coccinélidos</label>
+                            <select id="coccinelidos" name="coccinelidos">
+                                <option value="">No observado</option>
+                                <option value="bajo">Bajo</option>
+                                <option value="medio">Medio</option>
+                                <option value="alto">Alto</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OBSERVACIONES -->
+                <div class="form-section">
+                    <h3>📝 OBSERVACIONES</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="observaciones">Notas de Campo</label>
+                            <textarea id="observaciones" name="observaciones" placeholder="Síntomas, condiciones especiales, recomendaciones..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTONES -->
+                <div class="btn-section">
+                    <button type="button" class="btn btn-primary" onclick="guardarRegistro()">
+                        💾 Guardar Registro
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
+                        🗑️ Nuevo Registro
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- TAB REGISTROS -->
+        <div id="tab-registros" class="tab-content">
+            <div class="registros-header">
+                <h3>📋 REGISTROS GUARDADOS</h3>
+                <div class="registros-controls">
+                    <button class="btn btn-secondary" onclick="exportarCSV()">📊 Exportar CSV</button>
+                    <button class="btn btn-danger" onclick="borrarTodosRegistros()">🗑️ Borrar Todo</button>
+                </div>
+            </div>
+            <div id="registrosList" class="registros-list">
+                <!-- Los registros se cargan dinámicamente -->
+            </div>
+        </div>
+
+        <!-- TAB SINCRONIZAR -->
+        <div id="tab-sincronizar" class="tab-content">
+            <div class="sync-section">
+                <h3>☁️ SINCRONIZACIÓN</h3>
+                <p>Estado de la conexión y opciones de respaldo</p>
+                
+                <div class="sync-status">
+                    <div class="sync-item">
+                        <span>📱 Registros locales:</span>
+                        <strong id="localCount">0</strong>
+                    </div>
+                    <div class="sync-item">
+                        <span>💾 Último respaldo:</span>
+                        <strong id="lastBackup">Nunca</strong>
+                    </div>
+                </div>
+                
+                <div class="sync-controls">
+                    <button class="btn btn-primary" onclick="crearRespaldo()">
+                        💾 Crear Respaldo Local
+                    </button>
+                    <button class="btn btn-secondary" onclick="importarRespaldo()">
+                        📂 Importar Respaldo
+                    </button>
+                </div>
+                
+                <input type="file" id="fileInput" accept=".json" style="display: none;" onchange="procesarArchivo(event)">
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p id="loadingText">Cargando...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+    <script src="gps.js"></script>
+    <script src="storage.js"></script>
+</body>
+</html>
